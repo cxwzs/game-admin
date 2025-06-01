@@ -8,7 +8,7 @@ npm install
 
 **启动项目**
 ```bash
-npm run serve
+npm run dev
 ```
 
 **打包项目**
