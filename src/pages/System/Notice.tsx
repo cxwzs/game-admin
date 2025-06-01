@@ -6,7 +6,7 @@ import { Button, Card, Col, Form, Image, Input, message, Modal, Row, Upload } fr
 import { FetchNoticeApi, FetchOssTokenApi, UpdateNoticeApi } from '@/services/system'
 import { DeleteOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import Style from './notice.module.less'
-import * as OSS from 'ali-oss'
+import OSS from 'ali-oss'
 
 interface NoticeConfigProps {
   children: (open: () => void) => ReactNode
@@ -73,12 +73,12 @@ const NoticeConfig: FC<NoticeConfigProps> = ({ children }) => {
     const { file, onSuccess, onProgress, onError } = options
     const fileName = createOssFileName(file)
     FetchOssTokenApi({ fileName }).then(async res => {
-      const { } = res
+      const { regionId, access_key_id, access_key_secret, bucket } = res
       const client = new OSS({
-        region: 'oss-cn-beijing', // 替换为你的region
-        accessKeyId: 'your-accessKeyId', // 替换为你的AccessKeyId
-        accessKeySecret: 'your-accessKeySecret', // 替换为你的AccessKeySecret
-        bucket: 'your-bucket-name', // 替换为你的bucket名称
+        region: regionId, // 替换为你的region
+        accessKeyId: access_key_id, // 替换为你的AccessKeyId
+        accessKeySecret: access_key_secret, // 替换为你的AccessKeySecret
+        bucket: bucket, // 替换为你的bucket名称
       })
       try {
         const result = await client.put(fileName, file, {
@@ -93,7 +93,10 @@ const NoticeConfig: FC<NoticeConfigProps> = ({ children }) => {
         console.error('Upload failed:', err)
         onError({ err })
       }
-    }).catch(err => onError(err))
+    }).catch(err => {
+      console.log(err, 'err')
+      onError(err)
+    })
   }
 
   useEffect(() => {

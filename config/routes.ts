@@ -22,6 +22,11 @@ const routes = [
     component: './Club',
   },
   {
+    path: '/remark',
+    name: '留言管理',
+    component: './Remark',
+  },
+  {
     path: '/system',
     name: '系统管理',
     component: './System',

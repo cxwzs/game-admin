@@ -12,6 +12,7 @@ export interface ListItemType {
   clubName: string
   clubNo: number
   mainGameId: number
+  clubType: number
 }
 
 const Page = () => {
@@ -25,14 +26,8 @@ const Page = () => {
 
   const columns: ProColumns<ListItemType>[] = [
     {
-      title: '俱乐部ID',
-      dataIndex: 'clubId',
-      hideInSearch: true
-    },
-    {
       title: '俱乐部号',
       dataIndex: 'clubNo',
-      valueType: 'digit',
       fieldProps: {
         controls: false
       },
@@ -46,9 +41,18 @@ const Page = () => {
       copyable: true
     },
     {
-      title: 'mainGameId',
+      title: '俱乐部类型',
+      dataIndex: 'clubType',
+      ellipsis: true,
+      copyable: true,
+      renderText: (_, record) => {
+        const { clubType } = record
+        return clubType === 0 ? '普通俱乐部' : '合伙人俱乐部'
+      }
+    },
+    {
+      title: '群主ID',
       dataIndex: 'mainGameId',
-      valueType: 'digit',
       fieldProps: {
         controls: false
       },

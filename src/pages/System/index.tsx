@@ -4,7 +4,6 @@
 import { PageContainer } from "@ant-design/pro-components"
 import { Button, Descriptions } from "antd"
 import NoticeConfig from "./Notice"
-import RemarkConfig from "./Remark"
 
 const Page = () => {
 
@@ -14,11 +13,6 @@ const Page = () => {
         <NoticeConfig>
           {(open) => <Button type='primary' onClick={open}>设置</Button>}
         </NoticeConfig>
-      </Descriptions.Item>
-      <Descriptions.Item label="留言信息">
-        <RemarkConfig>
-          {(open) => <Button type='primary' onClick={open}>设置</Button>}
-        </RemarkConfig>
       </Descriptions.Item>
     </Descriptions>
   </PageContainer>

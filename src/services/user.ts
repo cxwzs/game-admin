@@ -10,3 +10,11 @@ export const FetchUserListApi = (params: any) => {
     data: params
   })
 }
+
+// 更新用户信息
+export const UpdateUserInfoApi = (params: any) => {
+  return request('/api/admin/modify_user_info', {
+    method: 'POST',
+    data: params
+  })
+}

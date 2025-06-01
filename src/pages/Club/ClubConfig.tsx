@@ -3,7 +3,7 @@
  */
 import { FC, useEffect, useState } from 'react'
 import { type ListItemType } from './index'
-import { Form, Input, message, Modal } from 'antd'
+import { Form, Input, message, Modal, Radio } from 'antd'
 import { UpdateClubInfoApi } from '@/services/club'
 
 interface ClubConfigProps {
@@ -60,8 +60,11 @@ const ClubConfig: FC<ClubConfigProps> = ({ visible, onClose, refreshList, info }
     onOk={onSubmit}
   >
     <Form form={form}>
-      <Form.Item label='俱乐部名称' name='clubName' rules={[{ required: true, message: '请输入俱乐部名称' }]}>
-        <Input placeholder='请输入俱乐部名称' />
+      <Form.Item label='俱乐部类型' name='clubType' initialValue={0} rules={[{ required: true, message: '请选择' }]}>
+       <Radio.Group>
+          <Radio value={0}>普通俱乐部</Radio>
+          <Radio value={1}>合伙人俱乐部</Radio>
+       </Radio.Group>
       </Form.Item>
     </Form>
   </Modal>

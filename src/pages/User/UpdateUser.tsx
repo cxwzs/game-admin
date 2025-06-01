@@ -1,46 +1,44 @@
 /**
- * 留言
+ * 修改用户信息
  */
-import { FC, ReactNode, useState } from 'react'
+import { FC, useState } from 'react'
 import { Form, Input, message, Modal } from 'antd'
-import { UpdateRemarkApi } from '@/services/system'
+import { UpdateUserInfoApi } from '@/services/user'
+import { type ListItemType } from './index'
 
-interface RemarkConfigProps {
-  children: (open: () => void) => ReactNode
+interface UpdateUserProps {
+  visible: boolean
+  onClose: () => void
+  refreshList: () => void
+  info: ListItemType
 }
 
-const RemarkConfig: FC<RemarkConfigProps> = ({ children }) => {
+const UpdateUser: FC<UpdateUserProps> = ({ visible, onClose, refreshList, info }) => {
 
   const [form] = Form.useForm()
 
   const [loading, setLoading] = useState(false)
-
-  const [visible, setVisible] = useState(false)
 
   const afterClose = () => {
     form.resetFields()
     setLoading(false)
   }
 
-  const onClose = () => {
-    setVisible(false)
-  }
-
   const onSubmit = () => {
     form.validateFields().then(formRes => {
       setLoading(true)
-      UpdateRemarkApi(formRes).then(res => {
+      UpdateUserInfoApi({
+        ...formRes,
+        userId: info.userId
+      }).then(res => {
         message.success(res.msg)
         onClose()
       }).finally(() => setLoading(false))
     }).catch(err => console.log(err, 'form表单校验失败'))
   }
 
-  return <>
-    {children(() => setVisible(true))}
-    <Modal
-      title="留言信息"
-      width={'30vw'}
+  return <Modal
+      title="用户信息"
       closable={false}
       maskClosable={false}
       keyboard={false}
@@ -51,12 +49,11 @@ const RemarkConfig: FC<RemarkConfigProps> = ({ children }) => {
       onOk={onSubmit}
     >
       <Form form={form}>
-        <Form.Item label='留言' name='remark' rules={[{ required: true, message: '请输入' }]}>
-          <Input.TextArea rows={4} placeholder='请输入' />
+        <Form.Item label='密码' name='passWord' rules={[{ required: true, message: '请输入' }]}>
+          <Input.Password placeholder='请输入' visibilityToggle />
         </Form.Item>
       </Form>
     </Modal>
-  </>
 }
 
-export default RemarkConfig
+export default UpdateUser
