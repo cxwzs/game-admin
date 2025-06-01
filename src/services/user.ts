@@ -1,0 +1,12 @@
+/**
+ * 用户管理
+ */
+import { request } from '@umijs/max'
+
+// 用户列表
+export const FetchUserListApi = (params: any) => {
+  return request('/api/admin/get_user_list', {
+    method: 'POST',
+    data: params
+  })
+}
