@@ -83,10 +83,11 @@ const Page = () => {
       rowKey={'id'}
       columns={columns}
       request={async (params) => {
-        const { current } = params
+        const { current, gameId } = params
         const { data, totalCount } = await FetchRemarkListApi({
           ...params,
-          pageNum: current
+          pageNum: current,
+          gameId: gameId ? Number(gameId) : undefined
         })
         return {
           data: data,

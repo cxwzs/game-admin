@@ -52,6 +52,7 @@ const Page = () => {
       dataIndex: 'proxyLevel',
       ellipsis: true,
       copyable: true,
+      hideInSearch: true,
       render: (_, record) => {
         const { proxyLevel, userId } = record
         return <Switch checked={!!proxyLevel} checkedChildren="是" unCheckedChildren="否" onChange={(checked) => {
@@ -69,6 +70,7 @@ const Page = () => {
       title: '剩余房卡数',
       dataIndex: 'insureScore',
       valueType: 'digit',
+      hideInSearch: true,
       ellipsis: true
     },
     {

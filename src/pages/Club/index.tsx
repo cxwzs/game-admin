@@ -45,9 +45,14 @@ const Page = () => {
       dataIndex: 'clubType',
       ellipsis: true,
       copyable: true,
-      renderText: (_, record) => {
-        const { clubType } = record
-        return clubType === 0 ? '普通俱乐部' : '合伙人俱乐部'
+      valueType: 'select',
+      valueEnum: {
+        0: {
+          text: '普通俱乐部'
+        },
+        1: {
+          text: '合伙人俱乐部'
+        }
       }
     },
     {
@@ -94,10 +99,13 @@ const Page = () => {
       rowKey={'clubId'}
       columns={columns}
       request={async (params) => {
-        const { current } = params
+        const { current, clubType, clubNo, mainGameId } = params
         const { data, totalCount } = await FetchClubListApi({
           ...params,
-          pageNum: current
+          pageNum: current,
+          clubType: clubType ? Number(clubType) : undefined,
+          clubNo: clubNo ? Number(clubNo) : undefined,
+          mainGameId: mainGameId ? Number(mainGameId) : undefined
         })
         return {
           data: data,
