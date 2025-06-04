@@ -5,7 +5,7 @@ import { request } from '@umijs/max'
 
 // 用户列表
 export const FetchUserListApi = (params: any) => {
-  return request('/api/admin/get_user_list', {
+  return request('/admin/get_user_list', {
     method: 'POST',
     data: params
   })
@@ -13,7 +13,15 @@ export const FetchUserListApi = (params: any) => {
 
 // 更新用户信息
 export const UpdateUserInfoApi = (params: any) => {
-  return request('/api/admin/modify_user_info', {
+  return request('/admin/modify_user_info', {
+    method: 'POST',
+    data: params
+  })
+}
+
+// 更新用户房卡
+export const UpdateRoomCardApi = (params: any) => {
+  return request('/admin/add_insure_score', {
     method: 'POST',
     data: params
   })

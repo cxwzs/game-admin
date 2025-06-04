@@ -4,7 +4,7 @@
 import { FC, useEffect, useState } from 'react'
 import { type ListItemType } from './index'
 import { Form, Input, message, Modal } from 'antd'
-import { UpdateNoticeApi } from '@/services/system'
+import { UpdateHorseApi } from '@/services/horse'
 
 interface HorseConfigProps {
   visible: boolean
@@ -27,18 +27,10 @@ const HorseConfig: FC<HorseConfigProps> = ({ visible, onClose, refreshList, info
   const onSubmit = () => {
     form.validateFields().then(formRes => {
       setLoading(true)
-      UpdateNoticeApi({
-        data: info.id ? [
-          {
+      UpdateHorseApi({
             id: info.id,
             msg: formRes.msg
-          }
-        ] : [
-          {
-            msg: formRes.msg
-          }
-        ]
-      }).then(res => {
+          }).then(res => {
         message.success('操作成功')
         onClose()
         refreshList()

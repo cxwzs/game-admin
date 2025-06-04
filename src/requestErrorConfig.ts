@@ -91,7 +91,7 @@ export const errorConfig: RequestConfig = {
     (config: RequestOptions) => {
       // 拦截请求配置，进行个性化处理。
       const token = localStorage.getItem('token')
-      return { ...config, headers: { 'x-token': `${token}` } };
+      return { ...config, headers: { 'x-token': `${token}` }, url: `${(window as any).globalApiUrl}${config.url}` };
     },
   ],
 

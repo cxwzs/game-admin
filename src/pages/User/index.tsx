@@ -2,11 +2,13 @@
  * 用户列表
  */
 import { type ActionType, PageContainer, ProColumns, ProTable } from "@ant-design/pro-components"
-import { Button, Image, message, Space, Switch } from "antd"
+import { Button, Image, message, Space, Statistic, Switch, Tooltip } from "antd"
 import { FetchUserListApi } from '@/services/user'
 import UpdateUser from './UpdateUser'
 import { useRef, useState } from "react"
 import { UpdateUserInfoApi } from '@/services/user'
+import { MinusCircleOutlined, PlusCircleOutlined } from "@ant-design/icons"
+import UpdateRoomCard from './RoomCard'
 
 export interface ListItemType {
   userId: number
@@ -24,6 +26,12 @@ const Page = () => {
   const [updateUserData, setUpadateUserData] = useState({
     visible: false,
     info: {} as ListItemType
+  })
+
+  const [updateRoomCardData, setUpadateRoomCardData] = useState({
+    visible: false,
+    info: {} as ListItemType,
+    status: 'add'
   })
 
   const columns: ProColumns<ListItemType>[] = [
@@ -71,7 +79,27 @@ const Page = () => {
       dataIndex: 'insureScore',
       valueType: 'digit',
       hideInSearch: true,
-      ellipsis: true
+      ellipsis: true,
+      render: (_, record) => {
+        const { insureScore } = record
+        return <Space>
+          <Statistic value={insureScore} valueStyle={{ fontSize: 16 }} />
+          <Tooltip title='充值房卡'>
+            <Button type='link' icon={<PlusCircleOutlined />} onClick={() => setUpadateRoomCardData({
+              visible: true,
+              status: 'add',
+              info: record
+            })}></Button>
+          </Tooltip>
+          <Tooltip title='扣除房卡'>
+            <Button type='link' icon={<MinusCircleOutlined />} onClick={() => setUpadateRoomCardData({
+              visible: true,
+              status: 'deduct',
+              info: record
+            })}></Button>
+          </Tooltip>
+        </Space>
+      }
     },
     {
       title: '操作',
@@ -115,6 +143,8 @@ const Page = () => {
     ></ProTable>
     {/* 修改用户信息 */}
     <UpdateUser {...updateUserData} refreshList={refreshList} onClose={() => setUpadateUserData(params => ({ ...params, visible: false }))} />
+      {/* 修改用户房卡 */}
+    <UpdateRoomCard {...updateRoomCardData} refreshList={refreshList} onClose={() => setUpadateRoomCardData(params => ({ ...params, visible: false, status: 'add' }))} />
   </PageContainer>
 }
 

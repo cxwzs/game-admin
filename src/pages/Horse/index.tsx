@@ -2,8 +2,8 @@
  * 俱乐部列表
  */
 import { type ActionType, PageContainer, ProColumns, ProTable } from "@ant-design/pro-components"
-import { Button, Space } from "antd"
-import { FetchNoticeApi } from '@/services/system'
+import { Button, message, Popconfirm, Space } from "antd"
+import { FetchHorseApi, UpdateHorseApi } from '@/services/horse'
 import HorseConfig from './HorseConfig'
 import { useRef, useState } from "react"
 
@@ -29,14 +29,30 @@ const Page = () => {
     },
     {
       title: '内容',
-      dataIndex: 'msg'
+      dataIndex: 'msg',
+      width: 500
     },
     {
       title: '操作',
       valueType: 'option',
+      width: 100,
       render: (_, record) => {
         return <Space>
           <Button type='link' size='small' onClick={() => setHorseConfigData(params => ({ ...params, visible: true, info: record }))}>编辑</Button>
+          <Popconfirm
+            title='确定要删除当前跑马灯配置吗'
+            onConfirm={() => {
+              UpdateHorseApi({
+                  id: record.id,
+                  msg: ''
+                }).then(res => {
+                message.success('删除成功')
+                refreshList()
+              })
+            }}
+          >
+            <Button type='link' size='small' danger>删除</Button>
+          </Popconfirm>
         </Space>
       }
     }
@@ -60,12 +76,19 @@ const Page = () => {
         ]
       }}
       request={async (params) => {
-        const { data } = await FetchNoticeApi()
-        return {
-          data: data,
-          success: true,
-          total: data.length || 0
+        const { data } = await FetchHorseApi()
+        if (data && data.length > 0) {
+          return {
+            data: data,
+            success: true,
+            total: data.length
+          }
         }
+        return {
+            data: [],
+            success: true,
+            total: 0
+          }
       }}
     ></ProTable>
     {/* 跑马灯配置 弹窗 */}

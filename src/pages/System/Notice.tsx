@@ -37,7 +37,10 @@ const NoticeConfig: FC<NoticeConfigProps> = ({ children }) => {
 
       setLoading(true)
       const { shareImg } = formRes
-      UpdateNoticeApi(formRes).then(res => {
+      UpdateNoticeApi({
+        ...formRes,
+        notice_list: formRes.notice
+      }).then(res => {
         message.success(res.msg)
         onClose()
       }).finally(() => setLoading(false))
@@ -165,7 +168,10 @@ const NoticeConfig: FC<NoticeConfigProps> = ({ children }) => {
               const { remove } = actions
               return <div className={Style.imgItem}>
                 <Image src={file.thumbUrl} />
-                <Button className={Style.deleteBtn} type='link' size='large' danger icon={<DeleteOutlined />} onClick={remove}></Button>
+                <Button className={Style.deleteBtn} type='link' size='large' danger icon={<DeleteOutlined />} onClick={() => {
+                  setShareImg([])
+                  form.setFieldsValue({ shareImg: '' })
+                }}></Button>
               </div>
             }}
           >
