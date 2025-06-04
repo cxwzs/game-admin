@@ -27,6 +27,11 @@ const routes = [
     component: './Remark',
   },
   {
+    path: '/horse',
+    name: '跑马灯',
+    component: './Horse',
+  },
+  {
     path: '/system',
     name: '系统管理',
     component: './System',

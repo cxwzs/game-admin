@@ -44,7 +44,6 @@ const Page = () => {
       title: '俱乐部类型',
       dataIndex: 'clubType',
       ellipsis: true,
-      copyable: true,
       valueType: 'select',
       valueEnum: {
         0: {

@@ -20,8 +20,11 @@ const NoticeConfig: FC<NoticeConfigProps> = ({ children }) => {
 
   const [visible, setVisible] = useState(false)
 
+  const [shareImg, setShareImg] = useState<any>([])
+
   const afterClose = () => {
     form.resetFields()
+    setShareImg([])
     setLoading(false)
   }
 
@@ -31,7 +34,9 @@ const NoticeConfig: FC<NoticeConfigProps> = ({ children }) => {
 
   const onSubmit = () => {
     form.validateFields().then(formRes => {
+
       setLoading(true)
+      const { shareImg } = formRes
       UpdateNoticeApi(formRes).then(res => {
         message.success(res.msg)
         onClose()
@@ -73,22 +78,28 @@ const NoticeConfig: FC<NoticeConfigProps> = ({ children }) => {
     const { file, onSuccess, onProgress, onError } = options
     const fileName = createOssFileName(file)
     FetchOssTokenApi({ fileName }).then(async res => {
-      const { regionId, access_key_id, access_key_secret, bucket } = res
+      const { regionId, access_key_id, access_key_secret, bucket, token, path } = res
       const client = new OSS({
-        region: regionId, // 替换为你的region
-        accessKeyId: access_key_id, // 替换为你的AccessKeyId
-        accessKeySecret: access_key_secret, // 替换为你的AccessKeySecret
-        bucket: bucket, // 替换为你的bucket名称
+        region: regionId,
+        accessKeyId: access_key_id,
+        accessKeySecret: access_key_secret,
+        bucket: bucket,
+        stsToken: token
       })
       try {
-        const result = await client.put(fileName, file, {
+        const result = await client.put(path, file, {
           progress: (p: number) => {
             onProgress({ percent: p * 100 })
           },
         });
 
         console.log('Upload success:', result)
-        onSuccess(result) // 返回结果给组件
+        onSuccess(result.url) // 返回结果给组件
+        form.setFieldValue('shareImg', result.url)
+        setShareImg([{
+          url: result.url,
+          thumbUrl: result.url
+        }])
       } catch (err) {
         console.error('Upload failed:', err)
         onError({ err })
@@ -102,7 +113,14 @@ const NoticeConfig: FC<NoticeConfigProps> = ({ children }) => {
   useEffect(() => {
     if (visible) {
       FetchNoticeApi().then(res => {
+        const { shareImg } = res
         form.setFieldsValue(res)
+        if(shareImg) {
+          setShareImg([{
+            url: shareImg,
+            thumbUrl: shareImg
+          }])
+        }
       })
     }
 
@@ -142,6 +160,7 @@ const NoticeConfig: FC<NoticeConfigProps> = ({ children }) => {
             maxCount={1}
             beforeUpload={beforeUpload}
             customRequest={customRequest}
+            fileList={shareImg}
             itemRender={(_, file, fileList, actions) => {
               const { remove } = actions
               return <div className={Style.imgItem}>
@@ -159,7 +178,7 @@ const NoticeConfig: FC<NoticeConfigProps> = ({ children }) => {
             </button>
           </Upload>
         </Form.Item>
-        <Card title='跑马灯配置'>
+        {/* <Card title='跑马灯配置'>
           <Form.List name="data">
             {(fields, { add, remove }) => (
               <Row gutter={[0, 0]}>
@@ -187,7 +206,7 @@ const NoticeConfig: FC<NoticeConfigProps> = ({ children }) => {
               </Row>
             )}
           </Form.List>
-        </Card>
+        </Card> */}
       </Form>
     </Modal>
   </>
