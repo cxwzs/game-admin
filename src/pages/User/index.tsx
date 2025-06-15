@@ -3,7 +3,7 @@
  */
 import { type ActionType, PageContainer, ProColumns, ProTable } from "@ant-design/pro-components"
 import { Button, Image, message, Space, Statistic, Switch, Tooltip } from "antd"
-import { FetchUserListApi } from '@/services/user'
+import { FetchUserListApi, AllowCreateCircleApi, AllowCreateCircleByUserApi } from '@/services/user'
 import UpdateUser from './UpdateUser'
 import { useRef, useState } from "react"
 import { UpdateUserInfoApi } from '@/services/user'
@@ -17,6 +17,8 @@ export interface ListItemType {
   headImg: string
   proxyLevel: number
   insureScore: number
+  openCreate: number
+  account: string
 }
 
 const Page = () => {
@@ -34,10 +36,19 @@ const Page = () => {
     status: 'add'
   })
 
+  // 所有玩家 是否允许 创建亲友圈
+  const [allAllowCreateCircle, setAllowCreateCircle] = useState(false)
+  const [allAllowCreateCircleLoading, setAllowCreateCircleLoading] = useState(false)
+
   const columns: ProColumns<ListItemType>[] = [
     {
       title: '用户ID',
       dataIndex: 'gameId',
+      copyable: true
+    },
+    {
+      title: '账号',
+      dataIndex: 'account',
       copyable: true
     },
     {
@@ -58,6 +69,16 @@ const Page = () => {
     {
       title: '是否代理',
       dataIndex: 'proxyLevel',
+      hideInTable: true,
+      valueType: 'select',
+      valueEnum: {
+        1: { text: '否' },
+        2: { text: '是' }
+      }
+    },
+    {
+      title: '是否代理',
+      dataIndex: 'proxyLevel',
       ellipsis: true,
       copyable: true,
       hideInSearch: true,
@@ -67,6 +88,25 @@ const Page = () => {
           UpdateUserInfoApi({
             userId,
             proxyLevel: Number(checked)
+          }).then(res => {
+            message.success(res.msg)
+            refreshList()
+          })
+        }} />
+      }
+    },
+    {
+      title: '是否允许创建亲友圈',
+      dataIndex: 'openCreate',
+      ellipsis: true,
+      copyable: true,
+      hideInSearch: true,
+      render: (_, record) => {
+        const { openCreate, userId } = record
+        return <Switch checked={!!openCreate} checkedChildren="是" unCheckedChildren="否" onChange={(checked) => {
+          AllowCreateCircleByUserApi({
+            userID: userId,
+            openCreate: Number(checked)
           }).then(res => {
             message.success(res.msg)
             refreshList()
@@ -126,14 +166,35 @@ const Page = () => {
         pageSize: 10,
         showQuickJumper: false
       }}
+      toolbar={{
+        actions: [
+          <Space>
+            <span>允许所有玩家创建亲友圈</span>
+            <Switch loading={allAllowCreateCircleLoading} checked={allAllowCreateCircle} checkedChildren='是' unCheckedChildren='否' onChange={(checked) => {
+              setAllowCreateCircleLoading(true)
+              AllowCreateCircleApi({
+                allCreateClub:  Number(checked)
+              }).then(res => {
+                message.success(res.msg)
+                setAllowCreateCircle(checked)
+                refreshList()
+              }).finally(() => setAllowCreateCircleLoading(false))
+            }}></Switch>
+          </Space>
+        ]
+      }}
       rowKey={'userId'}
       columns={columns}
       request={async (params) => {
-        const { current } = params
-        const { data, totalCount } = await FetchUserListApi({
-          ...params,
-          pageNum: current
+        const { current, proxyLevel, gameId, ...reset } = params
+        const { data, totalCount, allCreateClub } = await FetchUserListApi({
+           ...reset,
+          pageNum: current,
+          proxyLevel: proxyLevel ? Number(proxyLevel) : undefined,
+          // nickname: nickname ?? '',
+          gameID: gameId ? Number(gameId) : undefined
         })
+        setAllowCreateCircle(!!allCreateClub)
         return {
           data: data,
           success: true,
@@ -143,7 +204,7 @@ const Page = () => {
     ></ProTable>
     {/* 修改用户信息 */}
     <UpdateUser {...updateUserData} refreshList={refreshList} onClose={() => setUpadateUserData(params => ({ ...params, visible: false }))} />
-      {/* 修改用户房卡 */}
+    {/* 修改用户房卡 */}
     <UpdateRoomCard {...updateRoomCardData} refreshList={refreshList} onClose={() => setUpadateRoomCardData(params => ({ ...params, visible: false, status: 'add' }))} />
   </PageContainer>
 }

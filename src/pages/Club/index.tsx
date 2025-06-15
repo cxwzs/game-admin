@@ -28,9 +28,6 @@ const Page = () => {
     {
       title: '俱乐部号',
       dataIndex: 'clubNo',
-      fieldProps: {
-        controls: false
-      },
       ellipsis: true,
       copyable: true
     },
@@ -38,7 +35,7 @@ const Page = () => {
       title: '俱乐部名称',
       dataIndex: 'clubName',
       ellipsis: true,
-      copyable: true
+      hideInSearch: true
     },
     {
       title: '俱乐部类型',

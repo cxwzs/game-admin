@@ -26,3 +26,19 @@ export const UpdateRoomCardApi = (params: any) => {
     data: params
   })
 }
+
+// 是否 允许所有人创建亲友圈
+export const AllowCreateCircleApi = (params: any) => {
+  return request('/admin/set_all_create_club', {
+    method: 'POST',
+    data: params
+  })
+}
+
+// 指定玩家 是否允许创建亲友圈
+export const AllowCreateCircleByUserApi = (params: any) => {
+  return request('/admin/set_user_create_club', {
+    method: 'POST',
+    data: params
+  })
+}
