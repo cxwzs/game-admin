@@ -7,12 +7,29 @@ import { FetchNoticeApi, FetchOssTokenApi, UpdateNoticeApi } from '@/services/sy
 import { DeleteOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import Style from './notice.module.less'
 import OSS from 'ali-oss'
+import { UploadTypeEnum } from './enum'
 
 interface NoticeConfigProps {
   children: (open: () => void) => ReactNode
+  uploadType: UploadTypeEnum
 }
 
-const NoticeConfig: FC<NoticeConfigProps> = ({ children }) => {
+const modalTitleOptions = {
+  [UploadTypeEnum.share]: {
+    title: '分享图',
+    formField: 'shareImg'
+  },
+  [UploadTypeEnum.promotion]: {
+    title: '推广图',
+    formField: 'promotion'
+  },
+  [UploadTypeEnum.notice]: {
+    title: '公告图',
+    formField: 'notice'
+  }
+}
+
+const NoticeConfig: FC<NoticeConfigProps> = ({ children, uploadType }) => {
 
   const [form] = Form.useForm()
 
@@ -38,8 +55,8 @@ const NoticeConfig: FC<NoticeConfigProps> = ({ children }) => {
       setLoading(true)
       const { shareImg } = formRes
       UpdateNoticeApi({
-        ...formRes,
-        notice_list: formRes.notice
+        type: uploadType,
+        imgUrl: shareImg
       }).then(res => {
         message.success(res.msg)
         onClose()
@@ -116,12 +133,15 @@ const NoticeConfig: FC<NoticeConfigProps> = ({ children }) => {
   useEffect(() => {
     if (visible) {
       FetchNoticeApi().then(res => {
-        const { shareImg } = res
-        form.setFieldsValue(res)
-        if(shareImg) {
+        const { formField } = modalTitleOptions[uploadType]
+        const imgUrl = res[formField]
+        form.setFieldsValue({
+          shareImg: imgUrl
+        })
+        if(imgUrl) {
           setShareImg([{
-            url: shareImg,
-            thumbUrl: shareImg
+            url: imgUrl,
+            thumbUrl: imgUrl
           }])
         }
       })
@@ -135,7 +155,7 @@ const NoticeConfig: FC<NoticeConfigProps> = ({ children }) => {
   return <>
     {children(() => setVisible(true))}
     <Modal
-      title="跑马灯/公告/分享图"
+      title={modalTitleOptions[uploadType].title}
       width={'30vw'}
       closable={false}
       maskClosable={false}
@@ -147,11 +167,11 @@ const NoticeConfig: FC<NoticeConfigProps> = ({ children }) => {
       onOk={onSubmit}
     >
       <Form form={form}>
-        <Form.Item label='公告' name='notice' rules={[{ required: true, message: '请输入' }]}>
+        {/* <Form.Item label='公告' name='notice' rules={[{ required: true, message: '请输入' }]}>
           <Input.TextArea rows={4} placeholder='请输入' />
-        </Form.Item>
+        </Form.Item> */}
         <Form.Item
-          label="分享图"
+          // label="分享图"
           name='shareImg'
           valuePropName="shareImg"
           getValueFromEvent={normFile}
@@ -167,7 +187,7 @@ const NoticeConfig: FC<NoticeConfigProps> = ({ children }) => {
             itemRender={(_, file, fileList, actions) => {
               const { remove } = actions
               return <div className={Style.imgItem}>
-                <Image src={file.thumbUrl} />
+                <Image width={100} height={100} src={file.thumbUrl} />
                 <Button className={Style.deleteBtn} type='link' size='large' danger icon={<DeleteOutlined />} onClick={() => {
                   setShareImg([])
                   form.setFieldsValue({ shareImg: '' })

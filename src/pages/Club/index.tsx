@@ -2,10 +2,12 @@
  * 俱乐部列表
  */
 import { type ActionType, PageContainer, ProColumns, ProTable } from "@ant-design/pro-components"
-import { Button, Space } from "antd"
-import { FetchClubListApi } from '@/services/club'
-import ClubConfig from './ClubConfig'
+import { Button, message, Space, Switch } from "antd"
+import { FetchClubListApi, SetClubHideApi } from '@/services/club'
+import ClubConfig from "@/pages/CLub/ClubConfig"
 import { useRef, useState } from "react"
+import ClubMember from "@/pages/CLub/ClubMember"
+import ClubStatistics from "@/pages/CLub/ClubStatistics"
 
 export interface ListItemType {
   clubId: number
@@ -13,6 +15,8 @@ export interface ListItemType {
   clubNo: number
   mainGameId: number
   clubType: number
+  peopleCount: number
+  hideClub: number
 }
 
 const Page = () => {
@@ -22,6 +26,16 @@ const Page = () => {
   const [clubConfigData, setClubConfigData] = useState({
     visible: false,
     info: {} as ListItemType
+  })
+
+  const [clubMemberData, setClubMemberData] = useState({
+    visible: false,
+    clubInfo: {} as ListItemType
+  })
+
+  const [clubStatisticsData, setClubStatisticsData] = useState({
+    visible: false,
+    clubInfo: {} as ListItemType
   })
 
   const columns: ProColumns<ListItemType>[] = [
@@ -61,10 +75,35 @@ const Page = () => {
       copyable: true
     },
     {
+      title: '成员人数',
+      dataIndex: 'peopleCount',
+      hideInSearch: true
+    },
+    {
+      title: '是否隐藏',
+      dataIndex: 'hideClub',
+      ellipsis: true,
+      copyable: true,
+      hideInSearch: true,
+      render: (_, record) => {
+        const { hideClub, clubId } = record
+        return <Switch checked={!!hideClub} checkedChildren="是" unCheckedChildren="否" onChange={(checked) => {
+          SetClubHideApi({
+            clubID: clubId,
+            hideClub: Number(checked)
+          }).then(res => {
+            message.success(res.msg)
+            refreshList()
+          })
+        }} />
+      }
+    },
+    {
       title: '操作',
       hideInSearch: true,
       fixed: 'right',
       render: (_, record) => {
+        const { peopleCount } = record
         return <Space wrap>
           <Button type='link' size='small' onClick={() => {
             setClubConfigData({
@@ -72,6 +111,16 @@ const Page = () => {
               info: record
             })
           }}>编辑</Button>
+          {
+            peopleCount > 0 && <Button type='link' size='small' onClick={() => setClubMemberData(params => ({ ...params, visible: true, clubInfo: record }))}>成员</Button>
+          }
+          <Button type='link' size='small' onClick={() => setClubStatisticsData(params => ({
+            ...params,
+            visible: true,
+            clubInfo: record
+          }))}>
+            统计
+          </Button>
         </Space>
       }
     }
@@ -112,6 +161,10 @@ const Page = () => {
     ></ProTable>
     {/* 俱乐部配置 弹窗 */}
     <ClubConfig {...clubConfigData} onClose={() => setClubConfigData(params => ({ ...params, visible: false, info: {} as ListItemType }))} refreshList={refreshList} />
+    {/* 俱乐部成员 弹窗 */}
+    <ClubMember {...clubMemberData} onClose={() => setClubMemberData(params => ({ ...params, visible: false, clubInfo: {} as ListItemType }))} />
+    {/* 俱乐部统计 */}
+    <ClubStatistics {...clubStatisticsData} onClose={() => setClubStatisticsData(params => ({ ...params, visible: false, clubInfo: {} as ListItemType }))}/>
   </PageContainer>
 }
 

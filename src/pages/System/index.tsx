@@ -3,16 +3,27 @@
  */
 import { PageContainer } from "@ant-design/pro-components"
 import { Button, Descriptions } from "antd"
-import NoticeConfig from "./Notice"
+import UploadImg from "./Upload"
+import { UploadTypeEnum } from './enum'
 
 const Page = () => {
 
   return <PageContainer>
-    <Descriptions bordered column={3}>
-      <Descriptions.Item label="跑马灯/公告/分享图">
-        <NoticeConfig>
+    <Descriptions bordered column={1}>
+      <Descriptions.Item label="分享图">
+        <UploadImg uploadType={UploadTypeEnum.share}>
           {(open) => <Button type='primary' onClick={open}>设置</Button>}
-        </NoticeConfig>
+        </UploadImg>
+      </Descriptions.Item>
+      <Descriptions.Item label="推广图">
+        <UploadImg uploadType={UploadTypeEnum.promotion}>
+          {(open) => <Button type='primary' onClick={open}>设置</Button>}
+        </UploadImg>
+      </Descriptions.Item>
+      <Descriptions.Item label="公告图">
+        <UploadImg uploadType={UploadTypeEnum.notice}>
+          {(open) => <Button type='primary' onClick={open}>设置</Button>}
+        </UploadImg>
       </Descriptions.Item>
     </Descriptions>
   </PageContainer>
