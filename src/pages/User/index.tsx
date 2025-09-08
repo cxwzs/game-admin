@@ -19,6 +19,7 @@ export interface ListItemType {
   insureScore: number
   openCreate: number
   account: string
+  vipLevel: number
 }
 
 const Page = () => {
@@ -83,11 +84,32 @@ const Page = () => {
       copyable: true,
       hideInSearch: true,
       render: (_, record) => {
-        const { proxyLevel, userId } = record
+        const { proxyLevel, userId, vipLevel } = record
         return <Switch checked={!!proxyLevel} checkedChildren="是" unCheckedChildren="否" onChange={(checked) => {
           UpdateUserInfoApi({
             userId,
-            proxyLevel: Number(checked)
+            proxyLevel: Number(checked),
+            vipLevel
+          }).then(res => {
+            message.success(res.msg)
+            refreshList()
+          })
+        }} />
+      }
+    },
+    {
+      title: '管理员',
+      dataIndex: 'vipLevel',
+      ellipsis: true,
+      copyable: true,
+      hideInSearch: true,
+      render: (_, record) => {
+        const { vipLevel, userId, proxyLevel } = record
+        return <Switch checked={!!vipLevel} checkedChildren="是" unCheckedChildren="否" onChange={(checked) => {
+          UpdateUserInfoApi({
+            userId,
+            adminLevel: Number(checked),
+            proxyLevel
           }).then(res => {
             message.success(res.msg)
             refreshList()
@@ -165,6 +187,9 @@ const Page = () => {
       pagination={{
         pageSize: 10,
         showQuickJumper: false
+      }}
+      scroll={{
+        x: true
       }}
       toolbar={{
         actions: [

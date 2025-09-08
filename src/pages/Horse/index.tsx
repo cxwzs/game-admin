@@ -66,6 +66,9 @@ const Page = () => {
     <ProTable
       actionRef={actionRef}
       search={false}
+      scroll={{
+        x: true
+      }}
       options={false}
       pagination={false}
       rowKey={'id'}

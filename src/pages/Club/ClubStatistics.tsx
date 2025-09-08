@@ -69,9 +69,11 @@ const ClubStatistics: FC<ClubStatisticsProps> = ({ visible, onClose, clubInfo })
     onClose={onClose}
   >
     <ProTable
-      ignoreRules={true}
       options={false}
       size="small"
+      scroll={{
+        x: true
+      }}
       headerTitle={(
         <Flex gap={16} wrap> 
           <Space>

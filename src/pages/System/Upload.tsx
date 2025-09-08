@@ -156,7 +156,6 @@ const NoticeConfig: FC<NoticeConfigProps> = ({ children, uploadType }) => {
     {children(() => setVisible(true))}
     <Modal
       title={modalTitleOptions[uploadType].title}
-      width={'30vw'}
       closable={false}
       maskClosable={false}
       keyboard={false}

@@ -32,6 +32,11 @@ const routes = [
     component: './Horse',
   },
   {
+    path: '/product',
+    name: '商品配置',
+    component: './Product',
+  },
+  {
     path: '/system',
     name: '系统管理',
     component: './System',

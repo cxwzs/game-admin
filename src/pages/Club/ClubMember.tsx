@@ -63,6 +63,9 @@ const ClubMember: FC<ClubMemberProps> = ({ visible, onClose, clubInfo }) => {
       pagination={{
         pageSize: 10
       }}
+      scroll={{
+        x: true
+      }}
       columns={columns}
       request={async (params) => {
         const { current, ...reset } = params

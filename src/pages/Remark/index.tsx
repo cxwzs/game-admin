@@ -75,6 +75,9 @@ const Page = () => {
       search={{
         labelWidth: 'auto',
       }}
+      scroll={{
+        x: true
+      }}
       options={false}
       pagination={{
         pageSize: 10,
